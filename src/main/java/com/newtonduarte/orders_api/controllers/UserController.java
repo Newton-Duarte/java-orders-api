@@ -4,16 +4,21 @@ import com.newtonduarte.orders_api.domain.dto.UserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.mappers.Mapper;
 import com.newtonduarte.orders_api.services.UserService;
-import org.apache.coyote.Response;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
     private final Mapper<UserEntity, UserDto> userMapper;
@@ -23,13 +28,13 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    @GetMapping(path = "/users")
+    @GetMapping
     public List<UserDto> getUsers() {
         List<UserEntity> users = userService.findAll();
         return users.stream().map(userMapper::mapTo).collect(Collectors.toList());
     }
 
-    @GetMapping(path = "/users/{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
         Optional<UserEntity> foundUser = userService.findOne(id);
 
@@ -39,16 +44,16 @@ public class UserController {
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(path = "/users")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapFrom(userDto);
         UserEntity savedUserEntity = userService.save(userEntity);
 
         return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/users/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody UserDto userDto) {
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -59,8 +64,8 @@ public class UserController {
         return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.OK);
     }
 
-    @PatchMapping(path = "/users/{id}")
-    public ResponseEntity<UserDto> partialUpdateUser(@PathVariable("id") Long id, @RequestBody UserDto userDto) {
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<UserDto> partialUpdateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -69,5 +74,17 @@ public class UserController {
         UserEntity updatedUserEntity = userService.partialUpdate(id, userEntity);
 
         return new ResponseEntity<>(userMapper.mapTo(updatedUserEntity), HttpStatus.OK);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 }
