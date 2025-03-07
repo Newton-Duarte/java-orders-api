@@ -59,6 +59,7 @@ public class UserController {
         }
 
         UserEntity userEntity = userMapper.mapFrom(userDto);
+        userEntity.setId(id);
         UserEntity savedUserEntity = userService.save(userEntity);
 
         return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.OK);
