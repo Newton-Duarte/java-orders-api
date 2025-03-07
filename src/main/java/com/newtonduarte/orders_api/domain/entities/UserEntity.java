@@ -1,4 +1,4 @@
-package com.newtonduarte.orders_api.domain;
+package com.newtonduarte.orders_api.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
