@@ -238,4 +238,27 @@ public class UserControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.email").value(savedUserEntity.getEmail())
         );
     }
+
+    @Test
+    public void testThatDeleteUserReturnsHttp404WhenUserDoesNotExists() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/users/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
+
+    @Test
+    public void testThatDeleteUserReturnsHttp204WhenUserExists() throws Exception {
+        UserEntity testUserEntityA = TestDataUtils.createTestUserEntityA();
+        UserEntity savedUserEntity = userService.save(testUserEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/users/" + savedUserEntity.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
 }
