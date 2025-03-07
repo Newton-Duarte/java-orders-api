@@ -72,6 +72,7 @@ public class UserController {
         }
 
         UserEntity userEntity = userMapper.mapFrom(userDto);
+        userEntity.setId(id);
         UserEntity updatedUserEntity = userService.partialUpdate(id, userEntity);
 
         return new ResponseEntity<>(userMapper.mapTo(updatedUserEntity), HttpStatus.OK);
