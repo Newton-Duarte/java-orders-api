@@ -11,4 +11,5 @@ public interface UserService {
     Optional<UserEntity> findOne(Long id);
     boolean isExists(Long id);
     UserEntity partialUpdate(Long id, UserEntity userEntity);
+    void delete(Long id);
 }
