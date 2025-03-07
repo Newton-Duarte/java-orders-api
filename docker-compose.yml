@@ -1,9 +1,6 @@
-version: '3.1'
-
 services:
-
   orders_api_db:
-    image: postgres
+    image: bitnami/postgresql
     container_name: orders_api_db
     ports:
       - "5432:5432"
