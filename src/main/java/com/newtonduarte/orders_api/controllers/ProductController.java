@@ -1,6 +1,8 @@
 package com.newtonduarte.orders_api.controllers;
 
+import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
 import com.newtonduarte.orders_api.domain.dto.ProductDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.mappers.ProductMapper;
 import com.newtonduarte.orders_api.services.ProductService;
@@ -41,35 +43,22 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
-        ProductEntity productEntity = productMapper.toEntity(productDto);
-        ProductEntity savedProductEntity = productService.save(productEntity);
+    public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductDto createProductDto) {
+        CreateProductDto createProduct = productMapper.toCreateProductDto(createProductDto);
+        ProductEntity savedProductEntity = productService.createProduct(createProduct);
+        ProductDto productDto = productMapper.toDto(savedProductEntity);
 
-        return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDto updateProductDto) {
         if (!productService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        ProductEntity productEntity = productMapper.toEntity(productDto);
-        productEntity.setId(id);
-        ProductEntity savedProductEntity = productService.save(productEntity);
-
-        return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.OK);
-    }
-
-    @PatchMapping(path = "/{id}")
-    public ResponseEntity<ProductDto> partialUpdateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        if (!productService.isExists(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        ProductEntity productEntity = productMapper.toEntity(productDto);
-        productEntity.setId(id);
-        ProductEntity savedProductEntity = productService.partialUpdate(id, productEntity);
+        UpdateProductDto updateProduct = productMapper.toUpdateProductDto(updateProductDto);
+        ProductEntity savedProductEntity = productService.updateProduct(id, updateProduct);
 
         return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.OK);
     }
