@@ -1,8 +1,11 @@
 package com.newtonduarte.orders_api.services.impl;
 
+import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.repositories.ProductRepository;
 import com.newtonduarte.orders_api.services.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +27,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductEntity save(ProductEntity productEntity) {
-        return this.productRepository.save(productEntity);
+    public ProductEntity createProduct(CreateProductDto createProductDto) {
+        ProductEntity product = new ProductEntity();
+        product.setName(createProductDto.getName());
+        product.setPrice(createProductDto.getPrice());
+
+        return productRepository.save(product);
+    }
+
+    @Override
+    public ProductEntity updateProduct(Long id, UpdateProductDto updateProductDto) {
+        ProductEntity existingProduct = productRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
+
+        existingProduct.setName(updateProductDto.getName());
+        existingProduct.setPrice(updateProductDto.getPrice());
+
+        return productRepository.save(existingProduct);
     }
 
     @Override
