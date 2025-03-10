@@ -2,9 +2,10 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.newtonduarte.orders_api.domain.dto.UserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
-import com.newtonduarte.orders_api.mappers.Mapper;
+import com.newtonduarte.orders_api.mappers.UserMapper;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,71 +16,67 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final Mapper<UserEntity, UserDto> userMapper;
-
-    public UserController(final UserService userService, final Mapper<UserEntity, UserDto> userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
+    private final UserMapper userMapper;
 
     @GetMapping
-    public List<UserDto> getUsers() {
+    public ResponseEntity<List<UserDto>> getUsers() {
         List<UserEntity> users = userService.findAll();
-        return users.stream().map(userMapper::mapTo).collect(Collectors.toList());
+        List<UserDto> usersDto = users.stream().map(userMapper::toDto).toList();
+        return ResponseEntity.ok(usersDto);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         Optional<UserEntity> foundUser = userService.findOne(id);
 
         return foundUser.map(userEntity -> {
-            UserDto userDto = userMapper.mapTo(userEntity);
+            UserDto userDto = userMapper.toDto(userEntity);
             return new ResponseEntity<>(userDto, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        UserEntity userEntity = userMapper.mapFrom(userDto);
+        UserEntity userEntity = userMapper.toEntity(userDto);
         UserEntity savedUserEntity = userService.save(userEntity);
 
-        return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.toDto(savedUserEntity), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        UserEntity userEntity = userMapper.mapFrom(userDto);
+        UserEntity userEntity = userMapper.toEntity(userDto);
         userEntity.setId(id);
         UserEntity savedUserEntity = userService.save(userEntity);
 
-        return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.toDto(savedUserEntity), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<UserDto> partialUpdateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> partialUpdateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        UserEntity userEntity = userMapper.mapFrom(userDto);
+        UserEntity userEntity = userMapper.toEntity(userDto);
         userEntity.setId(id);
         UserEntity updatedUserEntity = userService.partialUpdate(id, userEntity);
 
-        return new ResponseEntity<>(userMapper.mapTo(updatedUserEntity), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.toDto(updatedUserEntity), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
