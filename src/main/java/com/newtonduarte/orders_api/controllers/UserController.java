@@ -1,5 +1,7 @@
 package com.newtonduarte.orders_api.controllers;
 
+import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.mappers.UserMapper;
@@ -42,37 +44,24 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        UserEntity userEntity = userMapper.toEntity(userDto);
-        UserEntity savedUserEntity = userService.save(userEntity);
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
+        CreateUserDto createUser = userMapper.toCreateUserDto(createUserDto);
+        UserEntity createdUserEntity = userService.createUser(createUser);
 
-        return new ResponseEntity<>(userMapper.toDto(savedUserEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.toDto(createdUserEntity), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDto updateUserDto) {
         if (!userService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        UserEntity userEntity = userMapper.toEntity(userDto);
-        userEntity.setId(id);
-        UserEntity savedUserEntity = userService.save(userEntity);
+        UpdateUserDto updateUser = userMapper.toUpdateUserDto(updateUserDto);
+        updateUser.setId(id);
+        UserEntity savedUserEntity = userService.updateUser(id, updateUser);
 
         return new ResponseEntity<>(userMapper.toDto(savedUserEntity), HttpStatus.OK);
-    }
-
-    @PatchMapping(path = "/{id}")
-    public ResponseEntity<UserDto> partialUpdateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
-        if (!userService.isExists(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        UserEntity userEntity = userMapper.toEntity(userDto);
-        userEntity.setId(id);
-        UserEntity updatedUserEntity = userService.partialUpdate(id, userEntity);
-
-        return new ResponseEntity<>(userMapper.toDto(updatedUserEntity), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
