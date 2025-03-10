@@ -2,8 +2,9 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.newtonduarte.orders_api.domain.dto.ProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
-import com.newtonduarte.orders_api.mappers.Mapper;
+import com.newtonduarte.orders_api.mappers.ProductMapper;
 import com.newtonduarte.orders_api.services.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,71 +15,67 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/products")
+@RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final Mapper<ProductEntity, ProductDto> productMapper;
-
-    public ProductController(ProductService productService, Mapper<ProductEntity, ProductDto> productMapper) {
-        this.productService = productService;
-        this.productMapper = productMapper;
-    }
+    private final ProductMapper productMapper;
 
     @GetMapping
-    public List<ProductDto> getProducts() {
+    public ResponseEntity<List<ProductDto>> getProducts() {
         List<ProductEntity> products = productService.findAll();
-        return products.stream().map(productMapper::mapTo).collect(Collectors.toList());
+        List<ProductDto> productsDto = products.stream().map(productMapper::toDto).toList();
+        return ResponseEntity.ok(productsDto);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ProductDto> getProduct(@PathVariable("id") Long id) {
+    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
         Optional<ProductEntity> foundProduct = productService.findOne(id);
 
         return foundProduct.map(productEntity -> {
-            ProductDto productDto = productMapper.mapTo(productEntity);
+            ProductDto productDto = productMapper.toDto(productEntity);
             return new ResponseEntity<>(productDto, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
-        ProductEntity productEntity = productMapper.mapFrom(productDto);
+        ProductEntity productEntity = productMapper.toEntity(productDto);
         ProductEntity savedProductEntity = productService.save(productEntity);
 
-        return new ResponseEntity<>(productMapper.mapTo(savedProductEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         if (!productService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        ProductEntity productEntity = productMapper.mapFrom(productDto);
+        ProductEntity productEntity = productMapper.toEntity(productDto);
         productEntity.setId(id);
         ProductEntity savedProductEntity = productService.save(productEntity);
 
-        return new ResponseEntity<>(productMapper.mapTo(savedProductEntity), HttpStatus.OK);
+        return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<ProductDto> partialUpdateProduct(@PathVariable("id") Long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> partialUpdateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         if (!productService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        ProductEntity productEntity = productMapper.mapFrom(productDto);
+        ProductEntity productEntity = productMapper.toEntity(productDto);
         productEntity.setId(id);
         ProductEntity savedProductEntity = productService.partialUpdate(id, productEntity);
 
-        return new ResponseEntity<>(productMapper.mapTo(savedProductEntity), HttpStatus.OK);
+        return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         if (!productService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
