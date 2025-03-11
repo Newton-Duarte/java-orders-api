@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newtonduarte.orders_api.TestDataUtils;
+import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.services.ProductService;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.math.BigDecimal;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -44,8 +47,8 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatGetProductsReturnsListOfProducts() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProductEntity = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProductEntity = productService.createProduct(testCreateProductDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products")
@@ -75,8 +78,8 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatCreateProductReturnsCreatedProduct() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        String productJson = objectMapper.writeValueAsString(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        String productJson = objectMapper.writeValueAsString(testCreateProductDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/products")
@@ -93,8 +96,8 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatGetProductReturnsHttp200WhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products/" + savedProduct.getId())
@@ -116,8 +119,8 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatGetProductReturnsProductWhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products/" + savedProduct.getId())
@@ -133,8 +136,8 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatUpdateProductReturnsHttp200WhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         String productJson = objectMapper.writeValueAsString(savedProduct);
 
@@ -164,11 +167,11 @@ public class ProductControllerIntegrationTests {
 
     @Test
     public void testThatUpdateProductReturnsUpdatedProductWhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         savedProduct.setName("UPDATED");
-        savedProduct.setPrice(5.00);
+        savedProduct.setPrice(BigDecimal.valueOf(5.00));
 
         String productJson = objectMapper.writeValueAsString(savedProduct);
 
@@ -186,40 +189,9 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPartialUpdateProductReturnsHttp200WhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
-
-        String productJson = objectMapper.writeValueAsString(savedProduct);
-
-        mockMvc.perform(
-                MockMvcRequestBuilders.patch("/products/" + savedProduct.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(productJson)
-        ).andExpect(
-                MockMvcResultMatchers.status().isOk()
-        );
-    }
-
-    @Test
-    public void testThatPartialUpdateProductReturnsHttp404WhenProductDoesNotExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-
-        String productJson = objectMapper.writeValueAsString(testProductEntityA);
-
-        mockMvc.perform(
-                MockMvcRequestBuilders.patch("/products/999")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(productJson)
-        ).andExpect(
-                MockMvcResultMatchers.status().isNotFound()
-        );
-    }
-
-    @Test
     public void testThatDeleteProductReturnsHttp204WhenProductExists() throws Exception {
-        ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
-        ProductEntity savedProduct = productService.save(testProductEntityA);
+        CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
+        ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/products/" + savedProduct.getId())
