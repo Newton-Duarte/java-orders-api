@@ -55,6 +55,20 @@ public final class TestDataUtils {
                 .build();
     }
 
+    public static ProductEntity createTestProductEntityB() {
+        return ProductEntity.builder()
+                .name("Product B")
+                .price(BigDecimal.valueOf(10.00))
+                .build();
+    }
+
+    public static ProductEntity createTestProductEntityC() {
+        return ProductEntity.builder()
+                .name("Product C")
+                .price(BigDecimal.valueOf(10.00))
+                .build();
+    }
+
     public static CreateProductDto createTestCreateProductDtoA() {
         return CreateProductDto.builder()
                 .name("Product A")
