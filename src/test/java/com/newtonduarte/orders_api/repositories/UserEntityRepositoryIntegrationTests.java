@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserEntityRepositoryIntegrationTests {
     private final UserRepository underTest;
 
-
     @Autowired
     public UserEntityRepositoryIntegrationTests(UserRepository underTest) {
         this.underTest = underTest;
