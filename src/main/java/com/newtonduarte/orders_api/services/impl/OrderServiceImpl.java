@@ -38,6 +38,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderEntity getOrder(Long id) {
+        return orderRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + id));
+    }
+
+    @Override
     @Transactional
     public OrderEntity createOrder(CreateOrderDto createOrderDto) {
         OrderEntity createOrder = new OrderEntity();

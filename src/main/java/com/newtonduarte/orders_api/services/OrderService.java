@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface OrderService {
     List<OrderEntity> getOrders();
+    OrderEntity getOrder(Long id);
     OrderEntity createOrder(CreateOrderDto createOrderDto);
     OrderEntity updateOrder(Long id, UpdateOrderDto updateOrderDto);
     void deleteOrder(Long id);
