@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.domain.dto;
 
+import com.newtonduarte.orders_api.domain.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.List;
 public class OrderDto {
     private Long id;
     private String comments;
+    private OrderStatus status;
     private UserDto user;
     private List<OrderProductDto> products = new ArrayList<>();
     private BigDecimal total;

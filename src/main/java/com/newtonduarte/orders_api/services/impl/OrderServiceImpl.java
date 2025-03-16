@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.services.impl;
 
+import com.newtonduarte.orders_api.domain.OrderStatus;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderDto;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderProductDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateOrderDto;
@@ -62,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<CreateOrderProductDto> createOrderProductsDto = createOrderDto.getProducts();
         createOrder.setTotal(createOrderDto.getTotalOrderPrice());
+        createOrder.setStatus(createOrderDto.getStatus());
 
         OrderEntity savedOrder = orderRepository.save(createOrder);
 
@@ -101,6 +103,10 @@ public class OrderServiceImpl implements OrderService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + id));
 
+        if (existingOrder.getStatus().equals(OrderStatus.COMPLETE)) {
+            throw new IllegalArgumentException("Order status is complete and cannot be updated");
+        }
+
         Long userId = updateOrderDto.getUserId();
 
         UserEntity existingUser = userService
@@ -131,6 +137,7 @@ public class OrderServiceImpl implements OrderService {
 
         existingOrder.setUser(existingUser);
         existingOrder.getProducts().clear();
+        existingOrder.setStatus(updateOrderDto.getStatus());
         OrderEntity savedExistingOrder = orderRepository.save(existingOrder);
         savedExistingOrder.setProducts(updateOrderProducts);
         savedExistingOrder.setTotal(updateOrderDto.getTotalOrderPrice());

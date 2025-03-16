@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.domain.entities;
 
+import com.newtonduarte.orders_api.domain.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,10 @@ public class OrderEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_order"))
     private UserEntity user;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     private String comments;
 
