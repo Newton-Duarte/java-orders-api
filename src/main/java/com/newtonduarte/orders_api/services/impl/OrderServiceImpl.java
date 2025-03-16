@@ -86,4 +86,9 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository.save(savedOrder);
     }
+
+    @Override
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
 }

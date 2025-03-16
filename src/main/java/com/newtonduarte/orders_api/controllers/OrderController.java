@@ -31,4 +31,10 @@ public class OrderController {
         OrderEntity createdOrder = orderService.createOrder(createOrderDto);
         return new ResponseEntity<>(orderMapper.toDto(createdOrder), HttpStatus.CREATED);
     }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build();
+    }
 }
