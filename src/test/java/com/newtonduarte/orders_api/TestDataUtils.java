@@ -51,28 +51,28 @@ public final class TestDataUtils {
     public static ProductEntity createTestProductEntityA() {
         return ProductEntity.builder()
                 .name("Product A")
-                .price(BigDecimal.valueOf(10.00))
+                .price(10.00)
                 .build();
     }
 
     public static ProductEntity createTestProductEntityB() {
         return ProductEntity.builder()
                 .name("Product B")
-                .price(BigDecimal.valueOf(10.00))
+                .price(10.00)
                 .build();
     }
 
     public static ProductEntity createTestProductEntityC() {
         return ProductEntity.builder()
                 .name("Product C")
-                .price(BigDecimal.valueOf(10.00))
+                .price(10.00)
                 .build();
     }
 
     public static CreateProductDto createTestCreateProductDtoA() {
         return CreateProductDto.builder()
                 .name("Product A")
-                .price(BigDecimal.valueOf(10.00))
+                .price(10.00)
                 .build();
     }
 
@@ -80,7 +80,7 @@ public final class TestDataUtils {
         return UpdateProductDto.builder()
                 .id(1L)
                 .name("Product A")
-                .price(BigDecimal.valueOf(10.00))
+                .price(10.00)
                 .build();
     }
 }
