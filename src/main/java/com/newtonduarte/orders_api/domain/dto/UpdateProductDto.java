@@ -10,8 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,5 +24,5 @@ public class UpdateProductDto {
     private String name;
 
     @NotBlank(message = "Price is required")
-    private BigDecimal price;
+    private Double price;
 }
