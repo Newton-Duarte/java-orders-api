@@ -171,7 +171,7 @@ public class ProductControllerIntegrationTests {
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
 
         savedProduct.setName("UPDATED");
-        savedProduct.setPrice(BigDecimal.valueOf(5.00));
+        savedProduct.setPrice(5.00);
 
         String productJson = objectMapper.writeValueAsString(savedProduct);
 
