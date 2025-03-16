@@ -6,6 +6,7 @@ import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.repositories.ProductRepository;
 import com.newtonduarte.orders_api.services.ProductService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public List<ProductEntity> findAll() {
