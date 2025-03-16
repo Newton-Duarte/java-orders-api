@@ -9,5 +9,4 @@ import org.mapstruct.ReportingPolicy;
 public interface OrderMapper {
     OrderDto toDto(OrderEntity product);
     OrderEntity toEntity(OrderDto productDto);
-    CreateOrderDto toCreateOrderDto(CreateOrderDto createOrderDto);
 }

@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.mappers;
 
 import com.newtonduarte.orders_api.domain.dto.CreateOrderProductDto;
 import com.newtonduarte.orders_api.domain.dto.OrderProductDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateOrderProductDto;
 import com.newtonduarte.orders_api.domain.entities.OrderProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -10,5 +11,4 @@ import org.mapstruct.ReportingPolicy;
 public interface OrderProductMapper {
     OrderProductDto toDto(OrderProductEntity orderProductEntity);
     OrderProductEntity toEntity(OrderProductDto orderProductDto);
-    CreateOrderProductDto toCreateOrderProductDto(OrderProductDto orderProductDto);
 }
