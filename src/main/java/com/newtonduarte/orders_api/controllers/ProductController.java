@@ -40,8 +40,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductDto createProductDto) {
-        CreateProductDto createProduct = productMapper.toCreateProductDto(createProductDto);
-        ProductEntity savedProductEntity = productService.createProduct(createProduct);
+        ProductEntity savedProductEntity = productService.createProduct(createProductDto);
         ProductDto productDto = productMapper.toDto(savedProductEntity);
 
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
@@ -53,8 +52,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        UpdateProductDto updateProduct = productMapper.toUpdateProductDto(updateProductDto);
-        ProductEntity savedProductEntity = productService.updateProduct(id, updateProduct);
+        ProductEntity savedProductEntity = productService.updateProduct(id, updateProductDto);
 
         return new ResponseEntity<>(productMapper.toDto(savedProductEntity), HttpStatus.OK);
     }
