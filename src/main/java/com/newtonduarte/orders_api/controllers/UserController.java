@@ -41,8 +41,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
-        CreateUserDto createUser = userMapper.toCreateUserDto(createUserDto);
-        UserEntity createdUserEntity = userService.createUser(createUser);
+        UserEntity createdUserEntity = userService.createUser(createUserDto);
 
         return new ResponseEntity<>(userMapper.toDto(createdUserEntity), HttpStatus.CREATED);
     }
@@ -53,9 +52,8 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        UpdateUserDto updateUser = userMapper.toUpdateUserDto(updateUserDto);
-        updateUser.setId(id);
-        UserEntity savedUserEntity = userService.updateUser(id, updateUser);
+        updateUserDto.setId(id);
+        UserEntity savedUserEntity = userService.updateUser(id, updateUserDto);
 
         return new ResponseEntity<>(userMapper.toDto(savedUserEntity), HttpStatus.OK);
     }

@@ -11,6 +11,4 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
     UserDto toDto(UserEntity user);
     UserEntity toEntity(UserDto userDto);
-    CreateUserDto toCreateUserDto(CreateUserDto createUserDto);
-    UpdateUserDto toUpdateUserDto(UpdateUserDto updateUserDto);
 }
