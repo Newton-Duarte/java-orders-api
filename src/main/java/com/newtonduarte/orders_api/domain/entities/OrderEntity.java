@@ -20,7 +20,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_seq")
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderProductEntity> products = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,15 +37,6 @@ public class OrderEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public void addProducts(OrderProductEntity orderProductEntity) {
-        orderProductEntity.setOrderId(this.id);
-        products.add(orderProductEntity);
-    }
-
-    public void removeProduct(OrderProductEntity orderProductEntity) {
-        products.remove(orderProductEntity);
-    }
 
     @Transient
     public Double getTotalOrderPrice() {
