@@ -5,11 +5,12 @@ import lombok.*;
 
 import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -22,16 +23,4 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String email;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(email, that.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, email);
-    }
 }
