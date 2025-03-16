@@ -3,17 +3,16 @@ package com.newtonduarte.orders_api.domain.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
@@ -21,17 +20,17 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_seq")
     private Long id;
 
-    private String comments;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProductEntity> products = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_order"))
+    private UserEntity user;
+
+    private String comments;
+
     @Column(nullable = false)
-    private BigDecimal total;
+    private Double total;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -39,15 +38,40 @@ public class OrderEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderEntity that = (OrderEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(comments, that.comments) && Objects.equals(user, that.user) && Objects.equals(products, that.products) && Objects.equals(total, that.total) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+    public void addProducts(OrderProductEntity orderProductEntity) {
+        orderProductEntity.setOrderId(this.id);
+        products.add(orderProductEntity);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, comments, user, products, total, createdAt, updatedAt);
+    public void removeProduct(OrderProductEntity orderProductEntity) {
+        products.remove(orderProductEntity);
+    }
+
+    @Transient
+    public Double getTotalOrderPrice() {
+        double sum = 0D;
+        List<OrderProductEntity> orderProducts = getProducts();
+        for (OrderProductEntity op : orderProducts) {
+            sum += op.getTotalPrice();
+        }
+        return sum;
+    }
+
+    @Transient
+    public int getNumberOfProducts() {
+        return this.products.size();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
