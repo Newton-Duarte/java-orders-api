@@ -2,6 +2,8 @@ package com.newtonduarte.orders_api.services.impl;
 
 import com.newtonduarte.orders_api.domain.dto.CreateOrderDto;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderProductDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateOrderDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateOrderProductDto;
 import com.newtonduarte.orders_api.domain.entities.OrderEntity;
 import com.newtonduarte.orders_api.domain.entities.OrderProductEntity;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
@@ -14,7 +16,6 @@ import com.newtonduarte.orders_api.services.ProductService;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -85,6 +85,51 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setComments(createOrderDto.getComments());
 
         return orderRepository.save(savedOrder);
+    }
+
+    @Override
+    @Transactional
+    public OrderEntity updateOrder(Long id, UpdateOrderDto updateOrderDto) {
+        OrderEntity existingOrder = orderRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + id));
+
+        Long userId = updateOrderDto.getUserId();
+
+        UserEntity existingUser = userService
+                .findOne(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+
+        List<UpdateOrderProductDto> updateOrderProductsDto = updateOrderDto.getProducts();
+        List<OrderProductEntity> updateOrderProducts = new ArrayList<>();
+
+        long orderProductIndex = 1L;
+        for (var orderProductDto : updateOrderProductsDto) {
+            ProductEntity product = productService
+                    .findOne(orderProductDto.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
+
+            updateOrderProducts.add(
+                    OrderProductEntity.builder()
+                            .id(orderProductDto.getId() > 0 ? orderProductDto.getId() : orderProductIndex)
+                            .orderId(existingOrder.getId())
+                            .product(product)
+                            .quantity(orderProductDto.getQuantity())
+                            .price(orderProductDto.getPrice())
+                            .total(orderProductDto.getTotalPrice())
+                            .build());
+
+            orderProductIndex++;
+        }
+
+        existingOrder.setUser(existingUser);
+        existingOrder.getProducts().clear();
+        OrderEntity savedExistingOrder = orderRepository.save(existingOrder);
+        savedExistingOrder.setProducts(updateOrderProducts);
+        savedExistingOrder.setTotal(updateOrderDto.getTotalOrderPrice());
+        savedExistingOrder.setComments(updateOrderDto.getComments());
+
+        return orderRepository.save(savedExistingOrder);
     }
 
     @Override

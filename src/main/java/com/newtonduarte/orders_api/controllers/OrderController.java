@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.newtonduarte.orders_api.domain.dto.CreateOrderDto;
 import com.newtonduarte.orders_api.domain.dto.OrderDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateOrderDto;
 import com.newtonduarte.orders_api.domain.entities.OrderEntity;
 import com.newtonduarte.orders_api.mappers.OrderMapper;
 import com.newtonduarte.orders_api.services.OrderService;
@@ -30,6 +31,12 @@ public class OrderController {
     public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderDto createOrderDto) {
         OrderEntity createdOrder = orderService.createOrder(createOrderDto);
         return new ResponseEntity<>(orderMapper.toDto(createdOrder), HttpStatus.CREATED);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderDto updateOrderDto) {
+        OrderEntity updateOrder = orderService.updateOrder(id, updateOrderDto);
+        return ResponseEntity.ok(orderMapper.toDto(updateOrder));
     }
 
     @DeleteMapping(path = "/{id}")
