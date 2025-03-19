@@ -6,6 +6,7 @@ import com.newtonduarte.orders_api.domain.dto.UpdateProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.mappers.ProductMapper;
 import com.newtonduarte.orders_api.services.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductDto createProductDto) {
+    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody CreateProductDto createProductDto) {
         ProductEntity savedProductEntity = productService.createProduct(createProductDto);
         ProductDto productDto = productMapper.toDto(savedProductEntity);
 
