@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
