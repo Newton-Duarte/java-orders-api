@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.controllers;
 
+import com.newtonduarte.orders_api.domain.CreateOrderRequest;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderDto;
 import com.newtonduarte.orders_api.domain.dto.OrderDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateOrderDto;
@@ -41,7 +42,7 @@ public class OrderController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderDto updateOrderDto) {
-        OrderEntity updateOrder = orderService.updateOrder(id, updateOrderDto);
+        OrderEntity updateOrder = orderService.updateOrder(id, orderMapper.toUpdateOrderRequest(updateOrderDto));
         return ResponseEntity.ok(orderMapper.toDto(updateOrder));
     }
 
