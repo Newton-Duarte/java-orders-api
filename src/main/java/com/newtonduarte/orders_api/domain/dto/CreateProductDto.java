@@ -16,7 +16,6 @@ public class CreateProductDto {
     @Pattern(regexp = "^[\\w\\s-]+$", message = "Product name can only contain letters, numbers, spaces, and hyphens")
     private String name;
 
-    @NotNull(message = "Price is required")
-    @Min(value = 0, message = "Price must be greater than or equals to 0")
+    @DecimalMin(value = "0", inclusive = false, message = "Price must be greater than 0")
     private Double price;
 }
