@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.domain.dto;
 
 import com.newtonduarte.orders_api.domain.OrderStatus;
 import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class CreateOrderDto {
 
     @Builder.Default
     @Size(min = 1, message = "Minimum of {min} product")
-    private List<CreateOrderProductDto> products = new ArrayList<>();
+    private List<@Valid CreateOrderProductDto> products = new ArrayList<>();
 
     @NotNull(message = "Status is required")
     private OrderStatus status;
