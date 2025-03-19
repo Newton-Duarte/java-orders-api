@@ -18,10 +18,10 @@ public class CreateOrderProductDto {
     @NotNull(message = "Product Id is required")
     private Long productId;
 
-    @Min(1)
+    @Min(value = 1, message = "Quantity must be 1 or greater")
     private Integer quantity;
 
-    @DecimalMin(value = "0.0")
+    @DecimalMin(value = "0", inclusive = false, message = "Price must be greater than 0")
     private Double price;
 
     @Transient
