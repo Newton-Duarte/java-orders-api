@@ -1,10 +1,7 @@
 package com.newtonduarte.orders_api.domain.dto;
 
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +20,7 @@ public class UpdateProductDto {
     @Pattern(regexp = "^[\\w\\s-]+$", message = "Product name can only contain letters, numbers, spaces, and hyphens")
     private String name;
 
-    @NotBlank(message = "Price is required")
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than or equals to 0")
     private Double price;
 }
