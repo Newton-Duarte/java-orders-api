@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.services.impl;
 
+import com.newtonduarte.orders_api.domain.CreateOrderRequest;
 import com.newtonduarte.orders_api.domain.OrderStatus;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderDto;
 import com.newtonduarte.orders_api.domain.dto.CreateOrderProductDto;
@@ -49,9 +50,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderEntity createOrder(CreateOrderDto createOrderDto) {
         OrderEntity createOrder = new OrderEntity();
+    public OrderEntity createOrder(CreateOrderRequest createOrderRequest) {
+        OrderEntity orderEntity = new OrderEntity();
         List<OrderProductEntity> createOrderProducts = new ArrayList<>();
 
-        Long userId = createOrderDto.getUserId();
+        Long userId = createOrderRequest.getUserId();
         Optional<UserEntity> foundUser = userService.findOne(userId);
 
         if (foundUser.isEmpty()) {
@@ -59,16 +62,16 @@ public class OrderServiceImpl implements OrderService {
         }
 
         UserEntity user = foundUser.get();
-        createOrder.setUser(user);
+        orderEntity.setUser(user);
 
-        List<CreateOrderProductDto> createOrderProductsDto = createOrderDto.getProducts();
-        createOrder.setTotal(createOrderDto.getTotalOrderPrice());
-        createOrder.setStatus(createOrderDto.getStatus());
+        List<CreateOrderProductDto> createOrderEntityProducts = createOrderRequest.getProducts();
+        orderEntity.setTotal(createOrderRequest.getTotalOrderPrice());
+        orderEntity.setStatus(createOrderRequest.getStatus());
 
-        OrderEntity savedOrder = orderRepository.save(createOrder);
+        OrderEntity savedOrder = orderRepository.save(orderEntity);
 
         long orderProductIndex = 1L;
-        for (var orderProductDto : createOrderProductsDto) {
+        for (var orderProductDto : createOrderEntityProducts) {
             Optional<ProductEntity> foundProduct = productService.findOne(orderProductDto.getProductId());
 
             if (foundProduct.isEmpty()) {
@@ -91,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         savedOrder.setProducts(createOrderProducts);
-        savedOrder.setComments(createOrderDto.getComments());
+        savedOrder.setComments(orderEntity.getComments());
 
         return orderRepository.save(savedOrder);
     }
