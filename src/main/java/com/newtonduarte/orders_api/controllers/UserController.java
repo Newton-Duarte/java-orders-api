@@ -1,11 +1,13 @@
 package com.newtonduarte.orders_api.controllers;
 
+import com.newtonduarte.orders_api.config.SecurityConfig;
 import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.mappers.UserMapper;
 import com.newtonduarte.orders_api.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@SecurityRequirement(name = SecurityConfig.SECURITY)
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
