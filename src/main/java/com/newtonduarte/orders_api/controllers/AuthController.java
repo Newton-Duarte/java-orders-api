@@ -10,7 +10,6 @@ import com.newtonduarte.orders_api.mappers.AuthMapper;
 import com.newtonduarte.orders_api.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
-@SecurityRequirement(name = SecurityConfig.SECURITY)
-@Tag(name = "Authentication", description = "Controller for Auth operations")
+@Tag(name = "Authentication", description = "Endpoints for Auth operations")
 public class AuthController {
     private final AuthService authService;
     private final AuthMapper authMapper;
