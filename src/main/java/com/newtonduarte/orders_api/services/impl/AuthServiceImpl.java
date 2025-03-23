@@ -15,18 +15,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -39,7 +40,26 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword())
         );
 
-        return userDetailsService.loadUserByUsername(email);
+        return userDetailsService.loadUserByUsername(signInRequest.getEmail());
+    }
+
+    @Override
+    public UserDetails signUp(SignUpRequest signUpRequest) {
+        Optional<UserEntity> foundUser = userRepository.findByEmail(signUpRequest.getEmail());
+
+        if (foundUser.isPresent()) {
+            throw new IllegalStateException("Email already exist!");
+        }
+
+        UserEntity rawUser = UserEntity.builder()
+                .name(signUpRequest.getName())
+                .email(signUpRequest.getEmail())
+                .password(passwordEncoder().encode(signUpRequest.getPassword()))
+                .build();
+
+        userRepository.save(rawUser);
+
+        return signIn(new SignInRequest(rawUser.getEmail(), rawUser.getPassword()));
     }
 
     @Override
@@ -74,5 +94,9 @@ public class AuthServiceImpl implements AuthService {
     private Key getSigningKey() {
         byte[] keyBytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
