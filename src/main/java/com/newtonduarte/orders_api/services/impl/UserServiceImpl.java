@@ -6,6 +6,7 @@ import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.repositories.UserRepository;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +16,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public List<UserEntity> findAll() {
