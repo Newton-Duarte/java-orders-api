@@ -1,5 +1,9 @@
 package com.newtonduarte.orders_api.services.impl;
 
+import com.newtonduarte.orders_api.domain.SignInRequest;
+import com.newtonduarte.orders_api.domain.SignUpRequest;
+import com.newtonduarte.orders_api.domain.entities.UserEntity;
+import com.newtonduarte.orders_api.repositories.UserRepository;
 import com.newtonduarte.orders_api.services.AuthService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,9 +34,9 @@ public class AuthServiceImpl implements AuthService {
     private final Long jwtExpiryMs = 86400000L;
 
     @Override
-    public UserDetails authenticate(String email, String password) {
+    public UserDetails signIn(SignInRequest signInRequest) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword())
         );
 
         return userDetailsService.loadUserByUsername(email);
