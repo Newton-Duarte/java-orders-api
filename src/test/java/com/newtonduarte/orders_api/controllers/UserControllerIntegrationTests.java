@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@WithMockUser(username = "mockuser@email.com", password = "mockuser", roles = {"USER"})
 public class UserControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final UserService userService;
@@ -139,10 +141,11 @@ public class UserControllerIntegrationTests {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
 
+        savedUserEntity.setPassword(null);
         String userJson = objectMapper.writeValueAsString(savedUserEntity);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put("/users/" + savedUserEntity.getId())
+                MockMvcRequestBuilders.put("/users/{userId}", savedUserEntity.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson)
         ).andExpect(
@@ -171,6 +174,7 @@ public class UserControllerIntegrationTests {
 
         savedUserEntity.setName("UPDATED");
         savedUserEntity.setEmail("updated@email.com");
+        savedUserEntity.setPassword(null);
 
         String userJson = objectMapper.writeValueAsString(savedUserEntity);
 
