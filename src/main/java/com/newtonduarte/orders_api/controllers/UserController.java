@@ -74,6 +74,15 @@ public class UserController {
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping(path = "/me")
+    public ResponseEntity<UserDto> getMe(@RequestAttribute Long userId) {
+        UserEntity user = userService
+                .findOne(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID " + userId));
+
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
     @PostMapping
     @Operation(summary = "Create a single user passing the required fields")
     @ApiResponses(value = {
