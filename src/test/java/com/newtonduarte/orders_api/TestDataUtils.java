@@ -1,9 +1,6 @@
 package com.newtonduarte.orders_api;
 
-import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
-import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
-import com.newtonduarte.orders_api.domain.dto.UpdateProductDto;
-import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
+import com.newtonduarte.orders_api.domain.dto.*;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 
@@ -84,6 +81,13 @@ public final class TestDataUtils {
                 .id(1L)
                 .name("Product A")
                 .price(10.00)
+                .build();
+    }
+
+    public static SignInDto createSignInDto(String email, String password) {
+        return SignInDto.builder()
+                .email(email)
+                .password(password)
                 .build();
     }
 }
