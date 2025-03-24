@@ -8,6 +8,7 @@ import com.newtonduarte.orders_api.domain.dto.SignInDto;
 import com.newtonduarte.orders_api.domain.dto.SignUpDto;
 import com.newtonduarte.orders_api.mappers.AuthMapper;
 import com.newtonduarte.orders_api.services.AuthService;
+import com.newtonduarte.orders_api.utils.AuthResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,10 +52,7 @@ public class AuthController {
         UserDetails userDetails = authService.signIn(signInRequest);
 
         String token = authService.generateToken(userDetails);
-        AuthResponse authResponse = AuthResponse.builder()
-                .token(token)
-                .expiresIn(86400) // 24 h
-                .build();
+        AuthResponse authResponse = AuthResponseUtils.generateAuthResponse(token);
 
         return ResponseEntity.ok(authResponse);
     }
@@ -78,10 +76,7 @@ public class AuthController {
         UserDetails userDetails = authService.signUp(signUpRequest);
 
         String token = authService.generateToken(userDetails);
-        AuthResponse authResponse = AuthResponse.builder()
-                .token(token)
-                .expiresIn(86400) // 24 h
-                .build();
+        AuthResponse authResponse = AuthResponseUtils.generateAuthResponse(token);
 
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
