@@ -14,6 +14,7 @@ public final class TestDataUtils {
         return UserEntity.builder()
                 .name("John Doe")
                 .email("johndoe@email.com")
+                .password("123456")
                 .build();
     }
 
@@ -21,6 +22,7 @@ public final class TestDataUtils {
         return UserEntity.builder()
                 .name("Jane doe")
                 .email("janedoe@email.com")
+                .password("123456")
                 .build();
     }
 
@@ -28,6 +30,7 @@ public final class TestDataUtils {
         return UserEntity.builder()
                 .name("John Smith")
                 .email("johnsmith@email.com")
+                .password("123456")
                 .build();
     }
 
@@ -35,6 +38,7 @@ public final class TestDataUtils {
         return CreateUserDto.builder()
                 .name("John Doe")
                 .email("johndoe@email.com")
+                .password("123456")
                 .build();
     }
 
@@ -43,6 +47,7 @@ public final class TestDataUtils {
                 .id(1L)
                 .name("John Doe")
                 .email("johndoe@email.com")
+                .password("123456")
                 .build();
     }
 
