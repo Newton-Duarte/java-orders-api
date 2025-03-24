@@ -4,6 +4,7 @@ import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.repositories.UserRepository;
+import com.newtonduarte.orders_api.security.StaticPasswordEncoder;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
         UserEntity newUser = new UserEntity();
         newUser.setName(createUserDto.getName());
         newUser.setEmail(createUserDto.getEmail());
+        newUser.setPassword(StaticPasswordEncoder.encodePassword(createUserDto.getPassword()));
 
         return userRepository.save(newUser);
     }
@@ -56,12 +58,15 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        UserEntity newUser = new UserEntity();
-        newUser.setId(updateUserDto.getId());
-        newUser.setName(updateUserDto.getName());
-        newUser.setEmail(updateUserDto.getEmail());
+        existingUser.setId(updateUserDto.getId());
+        existingUser.setName(updateUserDto.getName());
+        existingUser.setEmail(updateUserDto.getEmail());
 
-        return userRepository.save(newUser);
+        if (updateUserDto.getPassword() != null) {
+            existingUser.setPassword(StaticPasswordEncoder.encodePassword(updateUserDto.getPassword()));
+        }
+
+        return userRepository.save(existingUser);
     }
 
     @Override

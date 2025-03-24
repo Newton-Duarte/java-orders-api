@@ -22,4 +22,7 @@ public class UpdateUserDto {
 
     @NotBlank(message = "Email is required")
     private String email;
+
+    @Size(min = 6, max = 50, message = "Password must be between {min} and {max} characters")
+    private String password;
 }
