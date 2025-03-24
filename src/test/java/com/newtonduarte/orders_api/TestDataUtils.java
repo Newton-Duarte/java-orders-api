@@ -7,8 +7,6 @@ import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 
-import java.math.BigDecimal;
-
 public final class TestDataUtils {
     private TestDataUtils() {}
 
