@@ -52,13 +52,11 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> existingUserByEmail = userRepository
                 .findByEmail(updateUserDto.getEmail());
 
-        if (existingUserByEmail.isPresent()) {
-            if (!Objects.equals(existingUserByEmail.get().getId(), updateUserDto.getId())) {
-                throw new IllegalStateException("User with same email already exists");
-            }
+        if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), updateUserDto.getId())) {
+            throw new IllegalStateException("User with same email already exists");
         }
 
-        existingUser.setId(updateUserDto.getId());
+        existingUser.setId(id);
         existingUser.setName(updateUserDto.getName());
         existingUser.setEmail(updateUserDto.getEmail());
 
