@@ -18,9 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CreateOrderDto {
-    @NotNull(message = "User Id is required")
-    private Long userId;
-
     @Builder.Default
     @Size(min = 1, message = "Minimum of {min} product")
     private List<@Valid CreateOrderProductDto> products = new ArrayList<>();

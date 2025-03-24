@@ -9,7 +9,7 @@ import java.util.List;
 public interface OrderService {
     List<OrderEntity> getOrders();
     OrderEntity getOrder(Long id);
-    OrderEntity createOrder(CreateOrderRequest createOrderRequest);
-    OrderEntity updateOrder(Long id, UpdateOrderRequest updateOrderRequest);
+    OrderEntity createOrder(Long userId, CreateOrderRequest createOrderRequest);
+    OrderEntity updateOrder(Long postId, Long userId, UpdateOrderRequest updateOrderRequest);
     void deleteOrder(Long id);
 }

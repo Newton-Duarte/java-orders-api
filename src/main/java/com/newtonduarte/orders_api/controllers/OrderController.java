@@ -82,8 +82,11 @@ public class OrderController {
                     @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             })
     })
-    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderDto createOrderDto) {
-        OrderEntity orderEntity = orderService.createOrder(orderMapper.toCreateOrderRequest(createOrderDto));
+    public ResponseEntity<OrderDto> createOrder(
+            @Valid @RequestBody CreateOrderDto createOrderDto,
+            @RequestAttribute Long userId
+    ) {
+        OrderEntity orderEntity = orderService.createOrder(userId, orderMapper.toCreateOrderRequest(createOrderDto));
         return new ResponseEntity<>(orderMapper.toDto(orderEntity), HttpStatus.CREATED);
     }
 
@@ -104,8 +107,12 @@ public class OrderController {
                     @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             })
     })
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderDto updateOrderDto) {
-        OrderEntity updateOrder = orderService.updateOrder(id, orderMapper.toUpdateOrderRequest(updateOrderDto));
+    public ResponseEntity<OrderDto> updateOrder(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateOrderDto updateOrderDto,
+            @RequestAttribute Long userId
+    ) {
+        OrderEntity updateOrder = orderService.updateOrder(id, userId, orderMapper.toUpdateOrderRequest(updateOrderDto));
         return ResponseEntity.ok(orderMapper.toDto(updateOrder));
     }
 

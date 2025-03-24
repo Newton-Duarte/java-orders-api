@@ -16,8 +16,6 @@ import java.util.List;
 public class UpdateOrderRequest {
     private Long id;
 
-    private Long userId;
-
     @Builder.Default
     private List<UpdateOrderProductDto> products = new ArrayList<>();
 

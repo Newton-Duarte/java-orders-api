@@ -21,9 +21,6 @@ public class UpdateOrderDto {
     @NotNull(message = "Id is required")
     private Long id;
 
-    @NotNull(message = "User Id is required")
-    private Long userId;
-
     @Builder.Default
     @Size(min = 1, message = "Minimum of {min} product")
     private List<@Valid UpdateOrderProductDto> products = new ArrayList<>();

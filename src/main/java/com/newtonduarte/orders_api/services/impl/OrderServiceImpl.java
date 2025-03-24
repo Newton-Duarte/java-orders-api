@@ -46,11 +46,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderEntity createOrder(CreateOrderRequest createOrderRequest) {
+    public OrderEntity createOrder(Long userId, CreateOrderRequest createOrderRequest) {
         OrderEntity orderEntity = new OrderEntity();
         List<OrderProductEntity> createOrderProducts = new ArrayList<>();
 
-        Long userId = createOrderRequest.getUserId();
         Optional<UserEntity> foundUser = userService.findOne(userId);
 
         if (foundUser.isEmpty()) {
@@ -97,20 +96,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderEntity updateOrder(Long id, UpdateOrderRequest updateOrderRequest) {
+    public OrderEntity updateOrder(Long postId, Long userId, UpdateOrderRequest updateOrderRequest) {
         OrderEntity existingOrder = orderRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + id));
+                .findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + postId));
 
         if (existingOrder.getStatus().equals(OrderStatus.COMPLETE)) {
             throw new IllegalArgumentException("Order status is complete and cannot be updated");
         }
 
-        Long userId = updateOrderRequest.getUserId();
-
         UserEntity existingUser = userService
                 .findOne(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + postId));
 
         List<UpdateOrderProductDto> updateOrderProductsList = updateOrderRequest.getProducts();
         List<OrderProductEntity> updateOrderProducts = new ArrayList<>();
@@ -119,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
         for (var orderProductDto : updateOrderProductsList) {
             ProductEntity product = productService
                     .findOne(orderProductDto.getProductId())
-                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + postId));
 
             updateOrderProducts.add(
                     OrderProductEntity.builder()

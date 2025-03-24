@@ -14,8 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CreateOrderRequest {
-    private Long userId;
-
     @Builder.Default
     private List<CreateOrderProductDto> products = new ArrayList<>();
 
