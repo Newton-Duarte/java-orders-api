@@ -44,6 +44,22 @@ public final class TestDataUtils {
                 .build();
     }
 
+    public static CreateUserDto createTestCreateUserDtoB() {
+        return CreateUserDto.builder()
+                .name("John Smith")
+                .email("johnsmith@email.com")
+                .password("123456")
+                .build();
+    }
+
+    public static CreateUserDto createTestCreateUserDtoC() {
+        return CreateUserDto.builder()
+                .name("Jane Doe")
+                .email("janedoe@email.com")
+                .password("123456")
+                .build();
+    }
+
     public static UpdateUserDto createTestUpdateUserDtoA() {
         return UpdateUserDto.builder()
                 .id(1L)
@@ -77,6 +93,20 @@ public final class TestDataUtils {
     public static CreateProductDto createTestCreateProductDtoA() {
         return CreateProductDto.builder()
                 .name("Product A")
+                .price(10.00)
+                .build();
+    }
+
+    public static CreateProductDto createTestCreateProductDtoB() {
+        return CreateProductDto.builder()
+                .name("Product B")
+                .price(10.00)
+                .build();
+    }
+
+    public static CreateProductDto createTestCreateProductDtoC() {
+        return CreateProductDto.builder()
+                .name("Product C")
                 .price(10.00)
                 .build();
     }
