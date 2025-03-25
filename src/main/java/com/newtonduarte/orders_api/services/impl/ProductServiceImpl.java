@@ -7,12 +7,11 @@ import com.newtonduarte.orders_api.repositories.ProductRepository;
 import com.newtonduarte.orders_api.services.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +19,12 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public List<ProductEntity> findAll(String search) {
+    public Page<ProductEntity> findAll(Pageable pageable, String search) {
         if (search == null) {
-            return productRepository.findAll();
+            return productRepository.findAll(pageable);
         }
 
-        return productRepository.findByNameContainingIgnoreCase(search);
+        return productRepository.findByNameContainingIgnoreCase(pageable, search);
     }
 
     @Override

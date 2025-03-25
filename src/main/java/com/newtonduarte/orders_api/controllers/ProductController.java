@@ -17,11 +17,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -42,9 +43,12 @@ public class ProductController {
             }),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String search) {
-        List<ProductEntity> products = productService.findAll(search);
-        List<ProductDto> productsDto = products.stream().map(productMapper::toDto).toList();
+    public ResponseEntity<Page<ProductDto>> getProducts(
+            Pageable pageable,
+            @RequestParam(required = false) String search
+    ) {
+        Page<ProductEntity> products = productService.findAll(pageable, search);
+        Page<ProductDto> productsDto = products.map(productMapper::toDto);
         return ResponseEntity.ok(productsDto);
     }
 

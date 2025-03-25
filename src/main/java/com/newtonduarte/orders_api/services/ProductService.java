@@ -3,12 +3,13 @@ package com.newtonduarte.orders_api.services;
 import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateProductDto;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    List<ProductEntity> findAll(String search);
+    Page<ProductEntity> findAll(Pageable pageable, String search);
     ProductEntity createProduct(CreateProductDto createProductDto);
     ProductEntity updateProduct(Long id, UpdateProductDto updateProductDto);
     Optional<ProductEntity> findOne(Long id);
