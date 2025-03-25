@@ -32,8 +32,7 @@ public class ProductEntityRepositoryIntegrationTests {
         Optional<ProductEntity> result = underTest.findById(testProductEntityA.getId());
 
         assertThat(result).isPresent();
-        // isEqualTo is failing, I think is something related to Lombok and the Equals methods in the Entity Class
-        //assertThat(result.get()).isEqualTo(testProductEntityA);
+        assertThat(result.get()).isEqualTo(testProductEntityA);
     }
 
     @Test
