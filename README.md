@@ -41,11 +41,47 @@ The Orders Management API is a full-featured Spring Boot application designed to
 
 ### Authentication Endpoints
 - `POST /auth/sign-up`: Register a new user
+
+Request body example:
+```json
+{
+  "name": "John Doe",
+  "email": "johndoe@email.com",
+  "password": "123456"
+}
+```
+
 - `POST /auth/sign-in`: Authenticate and receive JWT token
+ 
+Request body example:
+```json
+{
+  "email": "johndoe@email.com",
+  "password": "123456"
+}
+```
 
 ### User Profile Endpoints
 - `GET /user-profile`: Retrieve the current user profile
+
+Response example:
+```json
+{
+  "name": "John Doe",
+  "email": "johndoe@email.com",
+  "password": "123456"
+}
+```
 - `PUT /user-profile`: Update the current user profile
+
+Request body example:
+```json
+{
+  "name": "John Smith",
+  "email": "johndoe@email.com",
+  "password": "123456"
+}
+```
 
 ### Product Endpoints
 - `GET /products`: List all products
