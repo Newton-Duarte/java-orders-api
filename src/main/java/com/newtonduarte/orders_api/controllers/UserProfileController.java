@@ -50,6 +50,15 @@ public class UserProfileController {
 
     @PutMapping
     @Operation(summary = "Update current user profile")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Request success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden request (Requires auth)", content = {
+                    @Content(schema = @Schema(implementation = Void.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
+            })
+    })
     public ResponseEntity<UserDto> updateUserProfile(
             @Valid @RequestBody UpdateUserProfileDto updateUserProfileDto,
             @RequestAttribute Long userId
