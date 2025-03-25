@@ -74,6 +74,15 @@ Response example:
 ```
 - `PUT /user-profile`: Update the current user profile
 
+Request body example:
+```json
+{
+  "name": "John Smith",
+  "email": "johndoe@email.com",
+  "password": "123456"
+}
+```
+
 ### Product Endpoints
 - `GET /products`: List all products
 - `POST /products`: Create a new product
