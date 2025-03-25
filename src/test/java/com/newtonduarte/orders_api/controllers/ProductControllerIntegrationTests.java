@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-@WithMockUser(username = "mockuser@email.com", password = "mockuser", roles = {"USER"})
 public class ProductControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final ProductService productService;
@@ -36,6 +35,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetProductsReturnsHttp200Ok() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products")
@@ -46,6 +46,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetProductsReturnsListOfProducts() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProductEntity = productService.createProduct(testCreateProductDto);
@@ -63,6 +64,17 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    public void testThatGetProductsReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatCreateProductReturnsHttp201Created() throws Exception {
         ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
         String productJson = objectMapper.writeValueAsString(testProductEntityA);
@@ -77,6 +89,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatCreateProductReturnsCreatedProduct() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         String productJson = objectMapper.writeValueAsString(testCreateProductDto);
@@ -95,6 +108,17 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    public void testThatCreateProductReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatGetProductReturnsHttp200WhenProductExists() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
@@ -108,6 +132,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetProductReturnsHttp404WhenProductDoesNotExists() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products/999")
@@ -118,6 +143,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetProductReturnsProductWhenProductExists() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
@@ -135,6 +161,17 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    public void testThatGetProductReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/products/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatUpdateProductReturnsHttp200WhenProductExists() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
@@ -151,6 +188,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatUpdateProductReturnsHttp404WhenProductDoesExists() throws Exception {
         ProductEntity testProductEntityA = TestDataUtils.createTestProductEntityA();
 
@@ -166,6 +204,7 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatUpdateProductReturnsUpdatedProductWhenProductExists() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
@@ -189,6 +228,17 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    public void testThatUpdateProductReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatDeleteProductReturnsHttp204WhenProductExists() throws Exception {
         CreateProductDto testCreateProductDto = TestDataUtils.createTestCreateProductDtoA();
         ProductEntity savedProduct = productService.createProduct(testCreateProductDto);
@@ -202,6 +252,17 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    public void testThatDeleteProductReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatDeleteProductReturnsHttp404WhenProductDoesNotExists() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/products/999")
