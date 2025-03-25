@@ -9,6 +9,8 @@ import com.newtonduarte.orders_api.security.StaticPasswordEncoder;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +25,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<UserEntity> findAll() {
-        return StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    public Page<UserEntity> findAll(Pageable pageable, String search) {
+        if (search == null) {
+            return userRepository.findAll(pageable);
+        }
+
+        return userRepository.findByNameOrEmailContainingIgnoreCase(pageable, search, search);
     }
 
     @Override

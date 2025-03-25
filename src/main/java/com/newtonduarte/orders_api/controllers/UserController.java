@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,9 +46,12 @@ public class UserController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
             })
     })
-    public ResponseEntity<List<UserDto>> getUsers() {
-        List<UserEntity> users = userService.findAll();
-        List<UserDto> usersDto = users.stream().map(userMapper::toDto).toList();
+    public ResponseEntity<Page<UserDto>> getUsers(
+            Pageable pageable,
+            @RequestParam(required = false) String search
+    ) {
+        Page<UserEntity> users = userService.findAll(pageable, search);
+        Page<UserDto> usersDto = users.map(userMapper::toDto);
         return ResponseEntity.ok(usersDto);
     }
 
