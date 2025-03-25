@@ -3,8 +3,10 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newtonduarte.orders_api.TestDataUtils;
+import com.newtonduarte.orders_api.domain.dto.CreateProductDto;
 import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
+import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -62,6 +64,26 @@ public class UserControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.content[0].name").value(savedUserEntity.getName())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.content[0].email").value(savedUserEntity.getEmail())
+        );
+    }
+
+    @Test
+    @WithMockUser
+    public void testThatGetUsersReturnsPaginatedListOfUsers() throws Exception {
+        CreateUserDto testCreateUserADto = TestDataUtils.createTestCreateUserDtoA();
+        CreateUserDto testCreateUserBDto = TestDataUtils.createTestCreateUserDtoB();
+        CreateUserDto testCreateUserCDto = TestDataUtils.createTestCreateUserDtoC();
+        UserEntity savedUserEntityA = userService.createUser(testCreateUserADto);
+        userService.createUser(testCreateUserBDto);
+        userService.createUser(testCreateUserCDto);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users?page=0&size=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.[0].id").value(savedUserEntityA.getId())
         );
     }
 
