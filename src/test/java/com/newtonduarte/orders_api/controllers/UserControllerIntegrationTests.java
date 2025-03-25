@@ -57,11 +57,11 @@ public class UserControllerIntegrationTests {
                 MockMvcRequestBuilders.get("/users")
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").value(savedUserEntity.getId())
+                MockMvcResultMatchers.jsonPath("$.content[0].id").value(savedUserEntity.getId())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].name").value(savedUserEntity.getName())
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value(savedUserEntity.getName())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].email").value(savedUserEntity.getEmail())
+                MockMvcResultMatchers.jsonPath("$.content[0].email").value(savedUserEntity.getEmail())
         );
     }
 
