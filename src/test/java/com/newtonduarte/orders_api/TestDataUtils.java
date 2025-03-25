@@ -140,4 +140,12 @@ public final class TestDataUtils {
                 }))
                 .build();
     }
+
+    public static UpdateUserProfileDto createUpdateUserProfileDto() {
+        return UpdateUserProfileDto.builder()
+                .name("John Doe")
+                .email("johndoe@email.com")
+                .password("123456")
+                .build();
+    }
 }
