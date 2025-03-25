@@ -64,6 +64,26 @@ public class ProductControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
+    public void testThatGetProductsReturnsPaginatedListOfProducts() throws Exception {
+        CreateProductDto testCreateProductADto = TestDataUtils.createTestCreateProductDtoA();
+        CreateProductDto testCreateProductBDto = TestDataUtils.createTestCreateProductDtoB();
+        CreateProductDto testCreateProductCDto = TestDataUtils.createTestCreateProductDtoC();
+        ProductEntity savedProductEntityA = productService.createProduct(testCreateProductADto);
+        productService.createProduct(testCreateProductBDto);
+        productService.createProduct(testCreateProductCDto);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/products?page=0&size=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.[0].id").value(savedProductEntityA.getId())
+        );
+    }
+
+    @Test
     public void testThatGetProductsReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products")
