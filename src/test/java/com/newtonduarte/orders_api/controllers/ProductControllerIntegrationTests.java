@@ -55,11 +55,11 @@ public class ProductControllerIntegrationTests {
                 MockMvcRequestBuilders.get("/products")
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").value(savedProductEntity.getId())
+                MockMvcResultMatchers.jsonPath("$.content[0].id").value(savedProductEntity.getId())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].name").value(savedProductEntity.getName())
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value(savedProductEntity.getName())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].price").value(savedProductEntity.getPrice())
+                MockMvcResultMatchers.jsonPath("$.content[0].price").value(savedProductEntity.getPrice())
         );
     }
 
