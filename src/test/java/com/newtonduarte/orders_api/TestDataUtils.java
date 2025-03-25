@@ -1,8 +1,13 @@
 package com.newtonduarte.orders_api;
 
+import com.newtonduarte.orders_api.domain.CreateOrderRequest;
+import com.newtonduarte.orders_api.domain.OrderStatus;
+import com.newtonduarte.orders_api.domain.UpdateOrderRequest;
 import com.newtonduarte.orders_api.domain.dto.*;
 import com.newtonduarte.orders_api.domain.entities.ProductEntity;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
+
+import java.util.List;
 
 public final class TestDataUtils {
     private TestDataUtils() {}
@@ -88,6 +93,51 @@ public final class TestDataUtils {
         return SignInDto.builder()
                 .email(email)
                 .password(password)
+                .build();
+    }
+
+    public static CreateOrderDto createCreateOrderDto() {
+        return CreateOrderDto.builder()
+                .comments("")
+                .status(OrderStatus.PENDING)
+                .products(List.of(new CreateOrderProductDto[]{
+                        CreateOrderProductDto.builder()
+                                .productId(1L)
+                                .quantity(1)
+                                .price(2.00)
+                                .build()
+                }))
+                .build();
+    }
+
+    public static CreateOrderRequest createCreateOrderRequest() {
+        return CreateOrderRequest.builder()
+                .comments("")
+                .status(OrderStatus.PENDING)
+                .products(List.of(new CreateOrderProductDto[]{
+                        CreateOrderProductDto.builder()
+                                .productId(1L)
+                                .quantity(1)
+                                .price(2.00)
+                                .build()
+                }))
+                .build();
+    }
+
+    public static UpdateOrderRequest createUpdateOrderRequest() {
+        return UpdateOrderRequest.builder()
+                .id(1L)
+                .comments("comments")
+                .status(OrderStatus.PENDING)
+                .products(List.of(new UpdateOrderProductDto[]{
+                        UpdateOrderProductDto.builder()
+                                .id(1L)
+                                .orderId(1L)
+                                .productId(1L)
+                                .quantity(1)
+                                .price(2.00)
+                                .build()
+                }))
                 .build();
     }
 }
