@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -72,25 +71,6 @@ public class UserController {
             UserDto userDto = userMapper.toDto(userEntity);
             return new ResponseEntity<>(userDto, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping(path = "/me")
-    @Operation(summary = "Get current user profile")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Request success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden request (Requires auth)", content = {
-                    @Content(schema = @Schema(implementation = Void.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
-            })
-    })
-    public ResponseEntity<UserDto> getMe(@RequestAttribute Long userId) {
-        UserEntity user = userService
-                .findOne(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID " + userId));
-
-        return ResponseEntity.ok(userMapper.toDto(user));
     }
 
     @PostMapping
