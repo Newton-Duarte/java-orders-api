@@ -42,8 +42,8 @@ public class ProductController {
             }),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<List<ProductDto>> getProducts() {
-        List<ProductEntity> products = productService.findAll();
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String search) {
+        List<ProductEntity> products = productService.findAll(search);
         List<ProductDto> productsDto = products.stream().map(productMapper::toDto).toList();
         return ResponseEntity.ok(productsDto);
     }

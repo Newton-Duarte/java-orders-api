@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    List<ProductEntity> findAll();
+    List<ProductEntity> findAll(String search);
     ProductEntity createProduct(CreateProductDto createProductDto);
     ProductEntity updateProduct(Long id, UpdateProductDto updateProductDto);
     Optional<ProductEntity> findOne(Long id);

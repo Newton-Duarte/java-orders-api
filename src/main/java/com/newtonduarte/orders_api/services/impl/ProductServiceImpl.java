@@ -20,8 +20,22 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public List<ProductEntity> findAll() {
-        return StreamSupport.stream(productRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    public List<ProductEntity> findAll(String search) {
+        if (search == null) {
+            return StreamSupport.stream(
+                    productRepository
+                            .findAll()
+                            .spliterator(),
+                    false)
+                    .collect(Collectors.toList());
+        }
+
+        return StreamSupport.stream(
+                        productRepository
+                                .findByNameContainingIgnoreCase(search)
+                                .spliterator(),
+                        false)
+                .collect(Collectors.toList());
     }
 
     @Override
