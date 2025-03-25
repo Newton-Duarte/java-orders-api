@@ -7,56 +7,76 @@ on:
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Make Maven wrapper executable
-        run: chmod +x ./mvnw
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Configure H2 Database for Unit Tests
-        run: |
-          # Update application.properties for H2 database
-          sed -i 's|spring.datasource.url=.*|spring.datasource.url=jdbc:h2:mem:testdb|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.driver-class-name=.*|spring.datasource.driver-class-name=org.h2.Driver|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.username=.*|spring.datasource.username=sa|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.password=.*|spring.datasource.password=|g' src/main/resources/application.properties
-          sed -i 's|spring.jpa.database-platform=.*|spring.jpa.database-platform=org.hibernate.dialect.H2Dialect|g' src/main/resources/application.properties
-
-      - name: Run Unit Tests
-        run: ./mvnw test -Dtest="*UnitTest"
-
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: List files and check mvnw permissions
+      run: |
+        pwd
+        ls -la
+        ls -la mvnw || echo "mvnw not found"
+    
+    - name: Ensure Maven wrapper is executable
+      run: |
+        sudo chmod +x mvnw
+        chmod u+x mvnw
+        chmod 755 mvnw
+    
+    - name: Configure H2 Database for Unit Tests
+      run: |
+        sed -i 's|spring.datasource.url=.*|spring.datasource.url=jdbc:h2:mem:testdb|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.driver-class-name=.*|spring.datasource.driver-class-name=org.h2.Driver|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.username=.*|spring.datasource.username=sa|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.password=.*|spring.datasource.password=|g' src/main/resources/application.properties
+        sed -i 's|spring.jpa.database-platform=.*|spring.jpa.database-platform=org.hibernate.dialect.H2Dialect|g' src/main/resources/application.properties
+    
+    - name: Run Unit Tests
+      run: |
+        if [ ! -x mvnw ]; then
+          echo "Maven wrapper is not executable"
+          exit 1
+        fi
+        ./mvnw test -Dtest="*UnitTest"
+  
   integration-tests:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Make Maven wrapper executable
-        run: chmod +x ./mvnw
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Configure H2 Database for Integration Tests
-        run: |
-          # Update application.properties for H2 database
-          sed -i 's|spring.datasource.url=.*|spring.datasource.url=jdbc:h2:mem:testdb|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.driver-class-name=.*|spring.datasource.driver-class-name=org.h2.Driver|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.username=.*|spring.datasource.username=sa|g' src/main/resources/application.properties
-          sed -i 's|spring.datasource.password=.*|spring.datasource.password=|g' src/main/resources/application.properties
-          sed -i 's|spring.jpa.database-platform=.*|spring.jpa.database-platform=org.hibernate.dialect.H2Dialect|g' src/main/resources/application.properties
-
-      - name: Run Integration Tests
-        run: ./mvnw test -Dtest="*IntegrationTest"
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Ensure Maven wrapper is executable
+      run: |
+        sudo chmod +x mvnw
+        chmod u+x mvnw
+        chmod 755 mvnw
+    
+    - name: Configure H2 Database for Integration Tests
+      run: |
+        sed -i 's|spring.datasource.url=.*|spring.datasource.url=jdbc:h2:mem:testdb|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.driver-class-name=.*|spring.datasource.driver-class-name=org.h2.Driver|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.username=.*|spring.datasource.username=sa|g' src/main/resources/application.properties
+        sed -i 's|spring.datasource.password=.*|spring.datasource.password=|g' src/main/resources/application.properties
+        sed -i 's|spring.jpa.database-platform=.*|spring.jpa.database-platform=org.hibernate.dialect.H2Dialect|g' src/main/resources/application.properties
+    
+    - name: Run Integration Tests
+      run: |
+        if [ ! -x mvnw ]; then
+          echo "Maven wrapper is not executable"
+          exit 1
+        fi
+        ./mvnw test -Dtest="*IntegrationTest"
