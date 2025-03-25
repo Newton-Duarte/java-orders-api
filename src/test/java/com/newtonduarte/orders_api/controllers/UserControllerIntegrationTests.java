@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-@WithMockUser(username = "mockuser@email.com", password = "mockuser", roles = {"USER"})
 public class UserControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final UserService userService;
@@ -38,6 +37,46 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
+    public void testThatGetUsersReturnsHttp200() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    @WithMockUser
+    public void testThatGetUsersReturnsListOfUsers() throws Exception {
+        CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
+        UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].id").value(savedUserEntity.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].name").value(savedUserEntity.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].email").value(savedUserEntity.getEmail())
+        );
+    }
+
+    @Test
+    public void testThatGetUsersReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatCreateUserReturnsHttp201Created() throws Exception {
         UserEntity testUserEntityA = TestDataUtils.createTestUserEntityA();
         String userJson = objectMapper.writeValueAsString(testUserEntityA);
@@ -52,6 +91,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatCreateUserReturnsSavedUser() throws Exception {
         UserEntity testUserEntityA = TestDataUtils.createTestUserEntityA();
         String userJson = objectMapper.writeValueAsString(testUserEntityA);
@@ -70,33 +110,17 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    public void testThatGetUsersReturnsHttp200() throws Exception {
+    public void testThatCreateUserReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/users")
+                MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                MockMvcResultMatchers.status().isOk()
+                MockMvcResultMatchers.status().isForbidden()
         );
     }
 
     @Test
-    public void testThatGetUsersReturnsListOfUsers() throws Exception {
-        CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
-        UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
-
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").value(savedUserEntity.getId())
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].name").value(savedUserEntity.getName())
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].email").value(savedUserEntity.getEmail())
-        );
-    }
-
-    @Test
+    @WithMockUser
     public void testThatGetUserReturnsHttp200WhenUserExist() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUser = userService.createUser(testCreateUserDtoA);
@@ -110,6 +134,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetUserReturnsHttp404WhenUserDoesNotExist() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/users/999")
@@ -120,6 +145,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatGetUserReturnsUserWhenUserExist() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
@@ -137,6 +163,17 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    public void testThatGetUserReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatUpdateUserReturnsHttp200WhenUserExist() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
@@ -154,6 +191,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatUpdateUserReturnsHttp404WhenUserDoesNotExist() throws Exception {
         UpdateUserDto testUpdateUserDtoA = TestDataUtils.createTestUpdateUserDtoA();
         String userJson = objectMapper.writeValueAsString(testUpdateUserDtoA);
@@ -168,6 +206,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatUpdateUserUpdatesExistingUser() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
@@ -192,6 +231,17 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    public void testThatUpdateUserReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/users/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+    }
+
+    @Test
+    @WithMockUser
     public void testThatDeleteUserReturnsHttp404WhenUserDoesNotExists() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/users/999")
@@ -202,6 +252,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser
     public void testThatDeleteUserReturnsHttp204WhenUserExists() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUserEntity = userService.createUser(testCreateUserDtoA);
@@ -211,6 +262,16 @@ public class UserControllerIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
+        );
+    }
+
+    @Test
+    public void testThatDeleteUserReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/users/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
         );
     }
 }
