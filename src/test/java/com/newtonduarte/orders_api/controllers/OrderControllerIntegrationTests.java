@@ -21,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,7 +40,12 @@ public class OrderControllerIntegrationTests {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public OrderControllerIntegrationTests(OrderService orderService, MockMvc mockMvc, ProductService productService, UserService userService) {
+    public OrderControllerIntegrationTests(
+            OrderService orderService,
+            MockMvc mockMvc,
+            ProductService productService,
+            UserService userService
+    ) {
         this.mockMvc = mockMvc;
         this.orderService = orderService;
         this.productService = productService;
@@ -93,7 +97,7 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPostOrdersReturns201Created() throws Exception {
+    public void testThatCreateOrderReturns201Created() throws Exception {
         CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
         productService.createProduct(testCreateProductDtoA);
         CreateOrderDto createOrderDto = TestDataUtils.createCreateOrderDto();
@@ -115,7 +119,7 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPostOrdersReturnsListOfOrders() throws Exception {
+    public void testThatCreateOrderReturnsOrder() throws Exception {
         CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
         productService.createProduct(testCreateProductDtoA);
         CreateOrderDto createOrderDto = TestDataUtils.createCreateOrderDto();
@@ -139,7 +143,7 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPostOrdersReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
+    public void testThatCreateOrderReturnsHttp403WhenUserIsNotAuthenticated() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,6 +175,32 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
+    public void testThatGetOrderReturnsOrderWhenOrderExists() throws Exception {
+        CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
+        productService.createProduct(testCreateProductDtoA);
+
+        CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
+        UserEntity savedUser = userService.createUser(testCreateUserDtoA);
+        ApiUserDetails apiUserDetails = new ApiUserDetails(savedUser);
+
+        CreateOrderRequest createOrderRequest = TestDataUtils.createCreateOrderRequest();
+        OrderEntity savedOrder = orderService.createOrder(savedUser.getId(), createOrderRequest);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/orders/" + savedOrder.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.user(apiUserDetails))
+                        .requestAttr("userId", 1L)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(savedOrder.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.products").isArray()
+        );
+    }
+
+    @Test
     public void testThatGetOrderReturnsHttp404WhenOrderDoesNotExists() throws Exception {
         CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
         UserEntity savedUser = userService.createUser(testCreateUserDtoA);
@@ -197,7 +227,7 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPutOrdersReturns200Ok() throws Exception {
+    public void testThatUpdateOrderReturns200Ok() throws Exception {
         CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
         productService.createProduct(testCreateProductDtoA);
 
@@ -226,7 +256,7 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPutOrdersReturnsUpdatedOrder() throws Exception {
+    public void testThatUpdateOrderReturnsUpdatedOrder() throws Exception {
         CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
         productService.createProduct(testCreateProductDtoA);
 
@@ -257,7 +287,37 @@ public class OrderControllerIntegrationTests {
     }
 
     @Test
-    public void testThatPutOrdersReturns403WhenWhenUserIsNotAuthenticated() throws Exception {
+    public void testThatUpdateOrderReturnsIllegal() throws Exception {
+        CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
+        productService.createProduct(testCreateProductDtoA);
+
+        CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
+        UserEntity savedUser = userService.createUser(testCreateUserDtoA);
+        ApiUserDetails apiUserDetails = new ApiUserDetails(savedUser);
+
+        CreateOrderRequest createOrderRequest = TestDataUtils.createCreateOrderRequest();
+        createOrderRequest.setStatus(OrderStatus.COMPLETE);
+        OrderEntity savedOrder = orderService.createOrder(savedUser.getId(), createOrderRequest);
+
+        UpdateOrderRequest updateOrderRequest = TestDataUtils.createUpdateOrderRequest();
+        updateOrderRequest.setId(savedOrder.getId());
+
+        String updateOrderJson = objectMapper.writeValueAsString(updateOrderRequest);
+
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/orders/" + savedOrder.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateOrderJson)
+                        .with(SecurityMockMvcRequestPostProcessors.user(apiUserDetails))
+                        .requestAttr("userId", 1L)
+        ).andExpect(
+                MockMvcResultMatchers.status().isBadRequest()
+        );
+    }
+
+    @Test
+    public void testThatUpdateOrderReturns403WhenWhenUserIsNotAuthenticated() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.put("/orders/999")
                         .contentType(MediaType.APPLICATION_JSON)
