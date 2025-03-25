@@ -1,5 +1,6 @@
 package com.newtonduarte.orders_api.domain.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,7 @@ public class UpdateUserDto {
     private String name;
 
     @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email")
     private String email;
 
     @Size(min = 6, max = 50, message = "Password must be between {min} and {max} characters")
