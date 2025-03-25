@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.services.impl;
 
 import com.newtonduarte.orders_api.domain.dto.CreateUserDto;
 import com.newtonduarte.orders_api.domain.dto.UpdateUserDto;
+import com.newtonduarte.orders_api.domain.dto.UpdateUserProfileDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.repositories.UserRepository;
 import com.newtonduarte.orders_api.security.StaticPasswordEncoder;
@@ -62,6 +63,30 @@ public class UserServiceImpl implements UserService {
 
         if (updateUserDto.getPassword() != null) {
             existingUser.setPassword(StaticPasswordEncoder.encodePassword(updateUserDto.getPassword()));
+        }
+
+        return userRepository.save(existingUser);
+    }
+
+    @Override
+    public UserEntity updateUserProfile(Long userId, UpdateUserProfileDto updateUserProfileDto) {
+        UserEntity existingUser = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id" + userId));
+
+        Optional<UserEntity> existingUserByEmail = userRepository
+                .findByEmail(updateUserProfileDto.getEmail());
+
+        if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), userId)) {
+            throw new IllegalStateException("User with same email already exists");
+        }
+
+        existingUser.setId(userId);
+        existingUser.setName(updateUserProfileDto.getName());
+        existingUser.setEmail(updateUserProfileDto.getEmail());
+
+        if (updateUserProfileDto.getPassword() != null) {
+            existingUser.setPassword(StaticPasswordEncoder.encodePassword(updateUserProfileDto.getPassword()));
         }
 
         return userRepository.save(existingUser);

@@ -2,6 +2,7 @@ package com.newtonduarte.orders_api.controllers;
 
 import com.newtonduarte.orders_api.config.SecurityConfig;
 import com.newtonduarte.orders_api.domain.dto.ApiErrorResponse;
+import com.newtonduarte.orders_api.domain.dto.UpdateUserProfileDto;
 import com.newtonduarte.orders_api.domain.dto.UserDto;
 import com.newtonduarte.orders_api.domain.entities.UserEntity;
 import com.newtonduarte.orders_api.mappers.UserMapper;
@@ -14,12 +15,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,5 +46,20 @@ public class UserProfileController {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID " + userId));
 
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    @PutMapping
+    @Operation(summary = "Update current user profile")
+    public ResponseEntity<UserDto> updateUserProfile(
+            @Valid @RequestBody UpdateUserProfileDto updateUserProfileDto,
+            @RequestAttribute Long userId
+    ) {
+        userService
+                .findOne(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID " + userId));
+
+        UserEntity updatedUserEntity = userService.updateUserProfile(userId, updateUserProfileDto);
+
+        return ResponseEntity.ok(userMapper.toDto(updatedUserEntity));
     }
 }
