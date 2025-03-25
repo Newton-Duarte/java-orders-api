@@ -16,6 +16,8 @@ import com.newtonduarte.orders_api.services.ProductService;
 import com.newtonduarte.orders_api.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
 
     @Override
-    public List<OrderEntity> getOrders() {
-        return orderRepository.findAll();
+    public Page<OrderEntity> getOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable);
     }
 
     @Override

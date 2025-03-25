@@ -82,7 +82,33 @@ public class OrderControllerIntegrationTests {
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").isNumber()
+                MockMvcResultMatchers.jsonPath("$.content[0].id").isNumber()
+        );
+    }
+
+    @Test
+    @WithMockUser
+    public void testThatGetOrdersReturnsPaginatedListOfOrders() throws Exception {
+        CreateProductDto testCreateProductDtoA = TestDataUtils.createTestCreateProductDtoA();
+        productService.createProduct(testCreateProductDtoA);
+
+        CreateUserDto testCreateUserDtoA = TestDataUtils.createTestCreateUserDtoA();
+        UserEntity savedUser = userService.createUser(testCreateUserDtoA);
+
+        CreateOrderRequest createOrderRequestA = TestDataUtils.createCreateOrderRequest();
+        CreateOrderRequest createOrderRequestB = TestDataUtils.createCreateOrderRequest();
+        CreateOrderRequest createOrderRequestC = TestDataUtils.createCreateOrderRequest();
+        OrderEntity savedOrderEntityA = orderService.createOrder(savedUser.getId(), createOrderRequestA);
+        orderService.createOrder(savedUser.getId(), createOrderRequestB);
+        orderService.createOrder(savedUser.getId(), createOrderRequestC);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/orders?page=0&size=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.[0].id").value(savedOrderEntityA.getId())
         );
     }
 

@@ -17,11 +17,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,9 +43,9 @@ public class OrderController {
                     @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             })
     })
-    public ResponseEntity<List<OrderDto>> getOrders() {
-        List<OrderEntity> orders = orderService.getOrders();
-        List<OrderDto> ordersDto = orders.stream().map(orderMapper::toDto).toList();
+    public ResponseEntity<Page<OrderDto>> getOrders(Pageable pageable) {
+        Page<OrderEntity> orders = orderService.getOrders(pageable);
+        Page<OrderDto> ordersDto = orders.map(orderMapper::toDto);
         return ResponseEntity.ok(ordersDto);
     }
 
